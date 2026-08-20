@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import type { Espacio } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,21 @@ export function EspacioForm({
   submitLabel: string;
 }) {
   const [state, formAction] = useFormState(action, initialState);
+
+  // Se completan solo después de montar en el cliente (evita mismatch de hidratación
+  // por la diferencia de horario entre el render de servidor y el del cliente).
+  const [defaultDates, setDefaultDates] = useState<{ apertura: string; cierre: string } | null>(
+    null,
+  );
+  useEffect(() => {
+    if (espacio) return;
+    const apertura = new Date();
+    apertura.setMinutes(0, 0, 0);
+    apertura.setHours(apertura.getHours() + 1);
+    const cierre = new Date(apertura);
+    cierre.setDate(cierre.getDate() + 7);
+    setDefaultDates({ apertura: toDatetimeLocal(apertura), cierre: toDatetimeLocal(cierre) });
+  }, [espacio]);
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
@@ -85,22 +101,26 @@ export function EspacioForm({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="fechaApertura">Fecha de apertura</Label>
           <Input
+            key={defaultDates?.apertura}
             id="fechaApertura"
             name="fechaApertura"
             type="datetime-local"
             required
-            defaultValue={espacio ? toDatetimeLocal(espacio.fechaApertura) : undefined}
+            defaultValue={
+              espacio ? toDatetimeLocal(espacio.fechaApertura) : defaultDates?.apertura
+            }
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="fechaCierre">Fecha de cierre</Label>
           <Input
+            key={defaultDates?.cierre}
             id="fechaCierre"
             name="fechaCierre"
             type="datetime-local"
             required
-            defaultValue={espacio ? toDatetimeLocal(espacio.fechaCierre) : undefined}
+            defaultValue={espacio ? toDatetimeLocal(espacio.fechaCierre) : defaultDates?.cierre}
           />
         </div>
 

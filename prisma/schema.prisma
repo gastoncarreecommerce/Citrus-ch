@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Seller {
+  id             String       @id @default(cuid())
+  sellerIdVtex   String       @unique // ID del seller en VTEX
+  razonSocial    String
+  cuit           String?
+  estado         SellerEstado @default(ACTIVO)
+  scoreHistorico Float? // cumplimiento / NPS, opcional para fase 2
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  users      User[]
+  propuestas Propuesta[]
+}
+
+enum SellerEstado {
+  ACTIVO
+  SUSPENDIDO
+  PENDIENTE_APROBACION
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  rol          Rol      @default(SELLER)
+  sellerId     String?
+  seller       Seller?  @relation(fields: [sellerId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+enum Rol {
+  SELLER
+  ADMIN
+}
+
+model Espacio {
+  id              String          @id @default(cuid())
+  nombre          String
+  descripcion     String?
+  canal           Canal
+  bonificado      Boolean         @default(false)
+  descuentoMinimo Float? // porcentaje mínimo requerido, opcional
+  cupoMax         Int             @default(1) // cantidad de sellers/SKUs que puede alojar el espacio
+  fechaApertura   DateTime
+  fechaCierre     DateTime
+  estado          EspacioEstado   @default(BORRADOR)
+  criterioRanking CriterioRanking @default(DESCUENTO)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  propuestas Propuesta[]
+}
+
+enum Canal {
+  SITE
+  APP
+  MAILING
+}
+
+enum EspacioEstado {
+  BORRADOR
+  ABIERTO
+  CERRADO
+  ARCHIVADO
+}
+
+enum CriterioRanking {
+  DESCUENTO // % de descuento ofrecido
+  SCORE_COMPUESTO // descuento + stock + historial seller (fase 2)
+}
+
+model Propuesta {
+  id        String          @id @default(cuid())
+  espacioId String
+  espacio   Espacio         @relation(fields: [espacioId], references: [id])
+  sellerId  String
+  seller    Seller          @relation(fields: [sellerId], references: [id])
+  estado    PropuestaEstado @default(BORRADOR)
+  version   Int             @default(1)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  items PropuestaItem[]
+
+  // reemplazadaPorId String? // trazabilidad de versiones -- opcional, no implementado en el MVP
+
+  @@index([espacioId])
+  @@index([sellerId])
+}
+
+enum PropuestaEstado {
+  BORRADOR
+  ENVIADA
+  GANADORA
+  RECHAZADA
+  VENCIDA
+}
+
+model PropuestaItem {
+  id              String    @id @default(cuid())
+  propuestaId     String
+  propuesta       Propuesta @relation(fields: [propuestaId], references: [id], onDelete: Cascade)
+  sku             String
+  nombreProducto  String
+  precioTachado   Float
+  precioOferta    Float
+  cuotas          Int       @default(1)
+  envioGratis     Boolean   @default(false)
+  stockDisponible Int // snapshot al momento de la propuesta, traído de VTEX
+  createdAt       DateTime  @default(now())
+
+  @@index([propuestaId])
+}

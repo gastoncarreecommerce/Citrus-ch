@@ -1,12 +1,14 @@
-"use client";
-
-import { signOut } from "next-auth/react";
+import { logoutAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 export function LogoutButton() {
   return (
-    <Button variant="outline" size="sm" onClick={() => signOut({ callbackUrl: "/login" })}>
-      Cerrar sesión
-    </Button>
+    <form action={logoutAction}>
+      <Button variant="outline" size="sm" type="submit" className="gap-1.5">
+        <LogOut className="h-3.5 w-3.5" />
+        Cerrar sesión
+      </Button>
+    </form>
   );
 }

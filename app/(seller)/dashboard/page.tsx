@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +41,9 @@ export default async function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {espacios.map((espacio) => (
-            <EspacioCard key={espacio.id} espacio={espacio} />
+            <Link key={espacio.id} href={`/espacios/${espacio.id}`} className="block">
+              <EspacioCard espacio={espacio} />
+            </Link>
           ))}
         </div>
       )}

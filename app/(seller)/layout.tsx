@@ -10,6 +10,10 @@ export default async function SellerLayout({ children }: { children: React.React
         email={session?.user.email ?? ""}
         roleLabel="Seller"
         homeHref="/dashboard"
+        navItems={[
+          { href: "/dashboard", label: "Espacios" },
+          { href: "/mis-propuestas", label: "Mis propuestas" },
+        ]}
       />
       {children}
     </div>

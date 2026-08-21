@@ -139,6 +139,19 @@ export async function setEspacioEstadoAction(espacioId: string, estado: string) 
   revalidatePath(`/admin/espacios/${espacioId}`);
 }
 
+export async function setPropuestaEstadoAction(
+  propuestaId: string,
+  estado: "GANADORA" | "RECHAZADA" | "ENVIADA",
+) {
+  await requireAdmin();
+  const propuesta = await prisma.propuesta.update({
+    where: { id: propuestaId },
+    data: { estado },
+  });
+
+  revalidatePath(`/admin/espacios/${propuesta.espacioId}`);
+}
+
 export async function deleteEspacioAction(espacioId: string) {
   await requireAdmin();
 

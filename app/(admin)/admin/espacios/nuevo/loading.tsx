@@ -1,0 +1,9 @@
+import { Spinner } from "@/components/spinner";
+
+export default function Loading() {
+  return (
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <Spinner />
+    </main>
+  );
+}

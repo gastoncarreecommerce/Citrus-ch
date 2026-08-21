@@ -1,7 +1,9 @@
 import type { Espacio } from "@prisma/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CanalBadge, BonificadoBadge } from "@/components/espacio-badges";
+import { EspacioImage } from "@/components/espacio-image";
 import { Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function tiempoRestante(fechaCierre: Date) {
   const ms = fechaCierre.getTime() - Date.now();
@@ -15,14 +17,25 @@ function tiempoRestante(fechaCierre: Date) {
 export function EspacioCard({ espacio }: { espacio: Espacio }) {
   return (
     <Card
-      className={
-        espacio.bonificado
-          ? "border-2 border-amber-400 shadow-md"
-          : ""
-      }
+      className={cn(
+        "overflow-hidden",
+        espacio.bonificado && "border-2 border-amber-400 shadow-md",
+      )}
     >
+      <div className="relative aspect-[16/9] w-full bg-slate-100">
+        <EspacioImage
+          src={espacio.imagenUrl}
+          alt={espacio.nombre}
+          className="h-full w-full object-cover"
+        />
+        {espacio.bonificado && (
+          <div className="absolute left-2 top-2">
+            <BonificadoBadge />
+          </div>
+        )}
+      </div>
+
       <CardHeader className="gap-2 pb-3">
-        {espacio.bonificado && <BonificadoBadge />}
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-base font-semibold text-slate-900">{espacio.nombre}</h3>
           <CanalBadge canal={espacio.canal} />

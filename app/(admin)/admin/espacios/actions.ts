@@ -22,6 +22,14 @@ const espacioSchema = z
       .trim()
       .optional()
       .transform((v) => (v ? v : undefined)),
+    imagenUrl: z
+      .string()
+      .trim()
+      .optional()
+      .transform((v) => (v ? v : undefined))
+      .refine((v) => v === undefined || z.string().url().safeParse(v).success, {
+        message: "La imagen debe ser una URL válida",
+      }),
     canal: z.enum(["SITE", "APP", "MAILING"]),
     bonificado: z.coerce.boolean(),
     descuentoMinimo: z
@@ -50,6 +58,7 @@ function parseEspacioForm(formData: FormData) {
   return espacioSchema.safeParse({
     nombre: formData.get("nombre"),
     descripcion: formData.get("descripcion"),
+    imagenUrl: formData.get("imagenUrl"),
     canal: formData.get("canal"),
     bonificado: formData.get("bonificado") === "on" || formData.get("bonificado") === "true",
     descuentoMinimo: formData.get("descuentoMinimo") || undefined,
@@ -77,6 +86,7 @@ export async function createEspacioAction(
     data: {
       nombre: data.nombre,
       descripcion: data.descripcion,
+      imagenUrl: data.imagenUrl,
       canal: data.canal,
       bonificado: data.bonificado,
       descuentoMinimo: data.descuentoMinimo,
@@ -110,6 +120,7 @@ export async function updateEspacioAction(
     data: {
       nombre: data.nombre,
       descripcion: data.descripcion,
+      imagenUrl: data.imagenUrl,
       canal: data.canal,
       bonificado: data.bonificado,
       descuentoMinimo: data.descuentoMinimo,

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Boxes, Plus } from "lucide-react";
 import { CanalBadge, EstadoBadge, BonificadoBadge } from "@/components/espacio-badges";
+import { EspacioImage } from "@/components/espacio-image";
 import { EstadoQuickAction } from "./estado-actions";
 
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
@@ -69,15 +70,26 @@ export default async function AdminEspaciosPage() {
                     <td className="px-4 py-3">
                       <Link
                         href={`/admin/espacios/${espacio.id}`}
-                        className="font-medium text-slate-900 hover:text-blue-600"
+                        className="flex items-center gap-3"
                       >
-                        {espacio.nombre}
-                      </Link>
-                      {espacio.bonificado && (
-                        <div className="mt-1">
-                          <BonificadoBadge />
+                        <div className="h-10 w-14 shrink-0 overflow-hidden rounded bg-slate-100">
+                          <EspacioImage
+                            src={espacio.imagenUrl}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                      )}
+                        <div>
+                          <span className="font-medium text-slate-900 hover:text-blue-600">
+                            {espacio.nombre}
+                          </span>
+                          {espacio.bonificado && (
+                            <div className="mt-1">
+                              <BonificadoBadge />
+                            </div>
+                          )}
+                        </div>
+                      </Link>
                     </td>
                     <td className="px-4 py-3">
                       <CanalBadge canal={espacio.canal} />

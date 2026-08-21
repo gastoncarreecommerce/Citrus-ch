@@ -39,6 +39,7 @@ export function EspacioForm({
   submitLabel: string;
 }) {
   const [state, formAction] = useFormState(action, initialState);
+  const [imagenUrl, setImagenUrl] = useState(espacio?.imagenUrl ?? "");
 
   // Se completan solo después de montar en el cliente (evita mismatch de hidratación
   // por la diferencia de horario entre el render de servidor y el del cliente).
@@ -76,6 +77,36 @@ export function EspacioForm({
           defaultValue={espacio?.descripcion ?? ""}
           placeholder="Detalle visible para el equipo interno"
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="imagenUrl">Imagen del espacio</Label>
+        <Input
+          id="imagenUrl"
+          name="imagenUrl"
+          type="url"
+          placeholder="https://... (banner o creatividad de referencia)"
+          value={imagenUrl}
+          onChange={(e) => setImagenUrl(e.target.value)}
+        />
+        <p className="text-xs text-slate-500">
+          Así ve el seller de un vistazo qué espacio le estamos ofreciendo. Pegá la URL de una
+          imagen (banner del sitio, mockup, etc).
+        </p>
+        {imagenUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imagenUrl}
+            alt="Preview del espacio"
+            className="mt-1 h-32 w-full rounded-md border border-slate-200 object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+            onLoad={(e) => {
+              e.currentTarget.style.display = "block";
+            }}
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">

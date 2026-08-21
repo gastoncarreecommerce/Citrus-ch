@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getSellerSurtido } from "@/lib/vtex";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CanalBadge, BonificadoBadge, EstadoBadge } from "@/components/espacio-badges";
+import { EspacioImage } from "@/components/espacio-image";
 import { PropuestaForm } from "./propuesta-form";
 
 const dateFormatter = new Intl.DateTimeFormat("es-AR", {
@@ -41,7 +42,14 @@ export default async function EspacioDetallePage({ params }: { params: { id: str
         Volver al dashboard
       </Link>
 
-      <Card className="mb-6">
+      <Card className="mb-6 overflow-hidden">
+        {espacio.imagenUrl && (
+          <EspacioImage
+            src={espacio.imagenUrl}
+            alt={espacio.nombre}
+            className="max-h-64 w-full object-cover"
+          />
+        )}
         <CardHeader className="gap-2">
           {espacio.bonificado && <BonificadoBadge />}
           <div className="flex flex-wrap items-center justify-between gap-2">

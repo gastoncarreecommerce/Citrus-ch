@@ -112,6 +112,15 @@ archivo para cualquier seller cuyo `sellerIdVtex` sea `seller-demo-001` (el
 seller de seed). Apenas se configuren las credenciales reales, `getSellerSurtido()`
 pasa a pegarle en vivo a la Search API de VTEX sin tocar el resto del código.
 
+## Cambios de schema sin acceso a terminal local
+
+Si el schema de Prisma cambia y no tenés forma de correr `npm run db:push`
+contra tu base (por ejemplo, trabajando 100% desde GitHub/Vercel web), en
+`prisma/migrations-manual/` vas a encontrar los `ALTER TABLE`/`CREATE TABLE`
+correspondientes a cada cambio, listos para pegar en el **SQL Editor** de
+Neon (console.neon.tech). `prisma/setup-manual.sql` tiene el schema completo
++ seed inicial, para una base nueva desde cero.
+
 ## Scripts
 
 - `npm run dev` / `npm run build` / `npm run start`

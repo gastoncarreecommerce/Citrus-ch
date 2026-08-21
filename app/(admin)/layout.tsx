@@ -10,6 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         email={session?.user.email ?? ""}
         roleLabel="Admin"
         homeHref="/admin/espacios"
+        navItems={[{ href: "/admin/espacios", label: "Espacios" }]}
       />
       {children}
     </div>

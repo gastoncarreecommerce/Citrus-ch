@@ -46,6 +46,7 @@ model Espacio {
   id              String          @id @default(cuid())
   nombre          String
   descripcion     String?
+  imagenUrl       String? // imagen/creatividad de referencia del espacio, mostrada al seller
   canal           Canal
   bonificado      Boolean         @default(false)
   descuentoMinimo Float? // porcentaje mínimo requerido, opcional

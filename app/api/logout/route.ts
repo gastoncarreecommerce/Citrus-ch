@@ -5,14 +5,26 @@ export async function POST(request: Request) {
   const cookieStore = cookies();
 
   for (const cookie of cookieStore.getAll()) {
-    if (cookie.name.toLowerCase().includes("authjs") || cookie.name.toLowerCase().includes("next-auth")) {
-      cookieStore.delete(cookie.name);
+    if (
+      cookie.name.toLowerCase().includes("authjs") ||
+      cookie.name.toLowerCase().includes("next-auth")
+    ) {
+      // Los navegadores exigen el flag `Secure` en CUALQUIER Set-Cookie
+      // para un nombre con prefijo __Secure-/__Host- (el que usa NextAuth
+      // en producción sobre HTTPS) -- sin eso, el navegador ignora el
+      // borrado en silencio y la cookie de sesión queda viva. Por eso
+      // andaba en local (HTTP, sin prefijo) pero no en producción.
+      cookieStore.set(cookie.name, "", {
+        path: "/",
+        expires: new Date(0),
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      });
     }
   }
 
   // 303: le dice al navegador que la request de seguimiento sea GET, sin
-  // importar que esta fue un POST. Con el 307 por defecto de
-  // NextResponse.redirect, el navegador reintentaba un POST a /login (que
-  // solo responde GET) y la cookie se borraba pero la pantalla quedaba rota.
+  // importar que esta fue un POST.
   return NextResponse.redirect(new URL("/login", request.url), 303);
 }

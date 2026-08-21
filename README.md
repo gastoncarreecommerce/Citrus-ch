@@ -152,6 +152,13 @@ app/api/cron/cerrar-espacios               -> job de cierre + ranking (protegido
    disponibles, `CRON_SECRET`).
 3. Correr `npx prisma db push` (o `migrate deploy`) contra la base de Neon
    antes del primer deploy.
-4. El cron de cierre (`vercel.json`) corre cada hora contra
+4. El cron de cierre (`vercel.json`) corre una vez por día (06:00 UTC) contra
    `/api/cron/cerrar-espacios`; Vercel agrega automáticamente el header
-   `Authorization: Bearer $CRON_SECRET` si esa env var está seteada.
+   `Authorization: Bearer $CRON_SECRET` si esa env var está seteada. Está en
+   una vez al día porque el plan **Hobby** de Vercel no permite cron jobs con
+   más frecuencia que esa (un `schedule` más seguido hace que Vercel
+   **rechace el deploy entero**, no solo el cron -- así se rompió el
+   auto-deploy en este proyecto). Si se pasa a plan **Pro**, se puede achicar
+   el intervalo (por ejemplo cada hora) editando `vercel.json`. Mientras
+   tanto, el endpoint también se puede disparar a mano con
+   `curl -H "Authorization: Bearer $CRON_SECRET" https://<tu-deploy>/api/cron/cerrar-espacios`.
